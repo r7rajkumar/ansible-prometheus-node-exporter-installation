@@ -1,0 +1,44 @@
+- name: Copy Node Exporter binary
+  copy:
+    src: node_exporter-{{ node_exporter_version }}.tar.gz
+    dest: /tmp/node_exporter.tar.gz
+    mode: 0644
+
+- name: Extract Node Exporter
+  unarchive:
+    src: /tmp/node_exporter.tar.gz
+    dest: /opt/node_exporter
+    remote_src: yes
+
+- name: Create Node Exporter user
+  user:
+    name: node_exporter
+    system: yes
+    shell: /bin/false
+
+- name: Configure Node Exporter service
+  template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Enable and start Node Exporter service
+  systemd:
+    name: node_exporter
+    daemon_reload: yes
+    enabled: yes
+    state: started
+    user: node_exporter
+    executable: /opt/node_exporter/node_exporter
+
+- name: Add Node Exporter firewall rule
+  ufw:
+    rule: allow
+    port: 9100
+
+- name: Restart UFW
+  service:
+    name: ufw
+    state: restarted
