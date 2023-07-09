@@ -1,14 +1,21 @@
+---
+- name: Create destination directory
+  file:
+    path: /opt/node_exporter
+    state: directory
+    owner: root
+    group: wheel
+    mode: "0755"
+
 - name: Download Node Exporter
   get_url:
     url: "https://github.com/prometheus/node_exporter/releases/download/v{{ node_exporter_version }}/node_exporter-{{ node_exporter_version }}.linux-amd64.tar.gz"
     dest: /tmp/node_exporter.tar.gz
-    mode: 0644
+    mode: "0644"
 
 - name: Extract Node Exporter
-  unarchive:
-    src: /tmp/node_exporter.tar.gz
-    dest: /opt/node_exporter
-    remote_src: yes
+  command:
+    cmd: "tar -xf /tmp/node_exporter.tar.gz -C /opt/node_exporter"
 
 - name: Create Node Exporter user
   user:
@@ -22,23 +29,18 @@
     dest: /etc/systemd/system/node_exporter.service
     owner: root
     group: root
-    mode: 0644
+    mode: "0755"
 
 - name: Enable and start Node Exporter service
   systemd:
-    name: node_exporter
-    daemon_reload: yes
-    enabled: yes
-    state: started
-    user: node_exporter
-    executable: /opt/node_exporter/node_exporter
+     name: node_exporter
+     daemon_reload: yes
+     enabled: yes
+     state: started
 
 - name: Add Node Exporter firewall rule
-  ufw:
-    rule: allow
-    port: 9100
-
-- name: Restart UFW
-  service:
-    name: ufw
-    state: restarted
+  iptables:
+    chain: INPUT
+    protocol: tcp
+    destination_port: 9100
+    jump: ACCEPT

@@ -37,9 +37,10 @@ The playbook will connect to the target virtual machines, install the required p
 
 Access the virtual machines and verify that Node Exporter is running by accessing the Node Exporter metrics endpoint. Open a web browser and enter the following URL, replacing vm-ip with the IP address or hostname of each virtual machine:
 
-http://vm-ip:9100/metrics
+http://ipaddress:9100/metrics
 
 you should see the Node Exporter metrics in the browser if the installation was successful.
 
 Notes
+In my case, I deployed this module on an Amazon EC2 instance using a PEM file for SSH authentication. However, in your case, since you are using a username and password for authentication, the steps or commands may vary slightly.
 Make sure you have the necessary permissions and access rights to the target virtual machines.
