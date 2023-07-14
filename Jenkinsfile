@@ -10,7 +10,8 @@ pipeline {
         
         stage('Deploy Prometheus Node Exporter') {
             steps {
-                sh 'ansible-playbook -i inventory playbook.yml'
+                sh 'ansible-playbook -i inventory playbook.yml -vvv'
+
             }
         }
     }
