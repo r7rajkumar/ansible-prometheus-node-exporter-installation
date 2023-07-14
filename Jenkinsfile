@@ -10,8 +10,9 @@ pipeline {
         
         stage('Deploy Prometheus Node Exporter') {
             steps {
-                sh 'ansible-playbook -i inventory playbook.yml -vvv'
-
+                withCredentials([sshUserPrivateKey(credentialsId: 'bd18aa96-90f1-4d29-93de-fd9910fc77b4', keyFileVariable: 'SSH_KEY')]) {
+                    sh 'ansible-playbook -i inventory playbook.yml --private-key=$SSH_KEY'
+                }
             }
         }
     }
@@ -26,3 +27,5 @@ pipeline {
         }
     }
 }
+
+
